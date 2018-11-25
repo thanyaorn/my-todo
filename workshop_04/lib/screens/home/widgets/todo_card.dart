@@ -16,9 +16,10 @@ class _TODOCardState extends State<TODOCard>{
 
   void _onCheckBoxChanged(bool value)
   {
-    setState(() {
+//    setState(() {
       todo.isDone = value;
-    });
+      todo.reference.updateData({'isDone':value});
+//    });
   }
 
   TextDecoration _getTextDecoration(bool value)

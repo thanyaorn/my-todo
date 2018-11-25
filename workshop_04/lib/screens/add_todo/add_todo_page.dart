@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:workshop_04/models/todo.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddTODOPage extends StatefulWidget {
   AddTODOPage({Key key}) : super(key: key);
@@ -26,7 +26,11 @@ class _AddTODOPageState extends State<AddTODOPage> {
             border: InputBorder.none,
             hintText: 'Enter todo here...'),
         onSubmitted: (text) {
-          Navigator.pop(context, TODO(name: text, isDone: false));
+          var data = Map<String, dynamic>();
+          data['title'] = text;
+          data['isDone'] = false;
+          Firestore.instance.collection('todo').add(data);
+          Navigator.pop(context, data);
         },
       )),
     );
