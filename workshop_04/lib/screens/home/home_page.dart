@@ -14,24 +14,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-  void _incrementCounter() async{
-    Map<String, dynamic> data = await Navigator.push(
+  void _incrementCounter() {
+    Navigator.push(
         context, MaterialPageRoute(builder: (context) => AddTODOPage()));
-    setState(() {
-
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('TODO List'),
       ),
-      body: Container(
-        child: _buildRow(context),
-      ),
+      body: _buildRow(context),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Add',
@@ -40,27 +34,31 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  _buildRow(BuildContext context)
-  {
+  _buildRow(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('todo').orderBy('isDone').snapshots(),
-      builder: (context, snapshot){
-        if(!snapshot.hasData)
+      stream: Firestore.instance
+          .collection('todo')
+//          .orderBy('isDone', descending: true)
+//          .orderBy('title')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
           return LinearProgressIndicator();
+        }
         return _buildList(context, snapshot.data.documents);
       },
     );
   }
 
-  _buildList(BuildContext context, List<DocumentSnapshot> snapshot){
-    List<TODO> _todos = snapshot
+  _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+    List<TODO> _todoList = snapshot
         .map((documentSnapshot) => TODO.fromSnapshot(documentSnapshot))
         .toList();
     return ListView.builder(
       itemBuilder: (buildContext, position) {
-        return TODOCard(_todos[position]);
+        return TODOCard(_todoList[position]);
       },
-      itemCount: _todos.length,
+      itemCount: _todoList.length,
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+import 'package:workshop_04/redux/app_state.dart';
+import 'package:workshop_04/redux/todo_list/todo_list_action.dart';
 
 class AddTODOPage extends StatefulWidget {
   AddTODOPage({Key key}) : super(key: key);
@@ -16,23 +19,22 @@ class _AddTODOPageState extends State<AddTODOPage> {
         title: Text("Add"),
       ),
       body: Padding(
-          padding:EdgeInsets.all(15),
-          child:TextField(
-        style: TextStyle(
-          fontSize: 24,
-          color: Colors.black
-        ),
-        decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: 'Enter todo here...'),
-        onSubmitted: (text) {
-          var data = Map<String, dynamic>();
-          data['title'] = text;
-          data['isDone'] = false;
-          Firestore.instance.collection('todo').add(data);
-          Navigator.pop(context, data);
-        },
-      )),
+          padding: EdgeInsets.all(15),
+          child: StoreConnector<AppState, ValueChanged<String>>(
+              converter: (store) => (text) {
+                    if (text.trim().isNotEmpty) {
+                      Navigator.of(context).pop();
+                      store.dispatch(AddTODOAction(text));
+                    }
+                  },
+              builder: (context, callback) {
+                return TextField(
+                  style: TextStyle(fontSize: 24, color: Colors.black),
+                  decoration: InputDecoration(
+                      border: InputBorder.none, hintText: 'Enter todo here...'),
+                  onSubmitted: callback,
+                );
+              })),
     );
   }
 }
